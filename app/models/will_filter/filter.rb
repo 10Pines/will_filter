@@ -412,8 +412,7 @@ module WillFilter
       condition_key = condition_key.to_sym if condition_key.is_a?(String)
       
       unless valid_operator?(condition_key, operator_key)
-        opers = definition[condition_key]
-        operator_key = first_sorted_operator(opers)
+        return;
       end
       
       condition = WillFilter::FilterCondition.new(self, condition_key, operator_key, container_for(condition_key, operator_key), values)

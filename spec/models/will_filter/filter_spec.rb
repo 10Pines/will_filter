@@ -244,6 +244,37 @@ describe WillFilter::Filter do
       end
     end
 
+    context 'When the serialized data has a condition over an inexistent attribute' do
+      before :all do
+        @filter = WillFilter::Filter.new(User)
+      end
+
+      it 'ignores the condition' do
+        @filter.from_params({
+                                "wf_type"=>"WillFilter::Filter",
+                                "wf_match"=>:all,
+                                "wf_model"=>"User",
+                                "wf_order"=>"first_name",
+                                "wf_order_type"=>"asc",
+                                "wf_per_page"=>30,
+                                "wf_export_fields"=>"",
+                                "wf_export_format"=>:html,
+                                "wf_c0"=>:inexistent_attribute,
+                                "wf_o0"=>:is,
+                                "wf_v0_0"=>"Alex",
+                                "wf_c1"=>:sex,
+                                "wf_o1"=>:is,
+                                "wf_v1_0"=>"male"
+                            })
+
+        @filter.order.should eq('first_name')
+        @filter.order_type.should eq('asc')
+        @filter.conditions.size.should eq(1)
+        @filter.conditions.first.key.should eq(:sex)
+        @filter.conditions.first.operator.should eq(:is)
+      end
+    end
+
   end
 
   describe '#merge_params' do
