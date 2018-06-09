@@ -1,5 +1,14 @@
 #--
-# Copyright (c) 2010-2013 Michael Berkovich
+# Copyright (c) 2017 Michael Berkovich, theiceberk@gmail.com
+#
+#  __    __  ____  _      _          _____  ____  _     ______    ___  ____
+# |  |__|  ||    || |    | |        |     ||    || |   |      |  /  _]|    \
+# |  |  |  | |  | | |    | |        |   __| |  | | |   |      | /  [_ |  D  )
+# |  |  |  | |  | | |___ | |___     |  |_   |  | | |___|_|  |_||    _]|    /
+# |  `  '  | |  | |     ||     |    |   _]  |  | |     | |  |  |   [_ |    \
+#  \      /  |  | |     ||     |    |  |    |  | |     | |  |  |     ||  .  \
+#   \_/\_/  |____||_____||_____|    |__|   |____||_____| |__|  |_____||__|\_|
+#
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -27,18 +36,18 @@ module WillFilter
       def self.operators
         [:is_provided, :is_not_provided]
       end
-    
+
       def template_name
         'blank'
       end
-    
+
       def validate
         # no validation is necessary
       end
-    
+
       def sql_condition
-        return [" #{condition.full_key} is not null "]  if operator == :is_provided
-        return [" #{condition.full_key} is null "]      if operator == :is_not_provided
+        return [" #{condition.full_key} is not null "] if operator == :is_provided
+        return [" #{condition.full_key} is null "] if operator == :is_not_provided
       end
     end
   end

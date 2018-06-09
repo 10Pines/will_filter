@@ -1,5 +1,14 @@
 #--
-# Copyright (c) 2010-2013 Michael Berkovich
+# Copyright (c) 2017 Michael Berkovich, theiceberk@gmail.com
+#
+#  __    __  ____  _      _          _____  ____  _     ______    ___  ____
+# |  |__|  ||    || |    | |        |     ||    || |   |      |  /  _]|    \
+# |  |  |  | |  | | |    | |        |   __| |  | | |   |      | /  [_ |  D  )
+# |  |  |  | |  | | |___ | |___     |  |_   |  | | |___|_|  |_||    _]|    /
+# |  `  '  | |  | |     ||     |    |   _]  |  | |     | |  |  |   [_ |    \
+#  \      /  |  | |     ||     |    |  |    |  | |     | |  |  |     ||  .  \
+#   \_/\_/  |____||_____||_____|    |__|   |____||_____| |__|  |_____||__|\_|
+#
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -24,27 +33,28 @@
 module WillFilter
   module Containers
     class TextDelimited < WillFilter::FilterContainer
-      TEXT_DELIMITER = ","  unless defined?(TEXT_DELIMITER)
-    
+      TEXT_DELIMITER = "," unless defined?(TEXT_DELIMITER)
+
       def self.operators
         [:is_in, :is_not_in]
       end
-    
+
       def template_name
         'text'
       end
-    
+
       def validate
         return "Values must be provided. Separate values with '#{TEXT_DELIMITER}'" if value.blank?
       end
-    
+
       def split_values
         value.split(TEXT_DELIMITER)
       end
-    
+
       def sql_condition
-        return [" #{condition.full_key} in (?) ", split_values] if operator == :is_in
-        return [" #{condition.full_key} not in (?) ", split_values] if operator == :is_not_in
+        sanitized_values = split_values.collect {|val| val.to_s.downcase}
+        return [" lower(#{condition.full_key}) in (?) ", sanitized_values] if operator == :is_in
+        return [" lower(#{condition.full_key}) not in (?) ", sanitized_values] if operator == :is_not_in
       end
     end
   end
