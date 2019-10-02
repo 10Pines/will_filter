@@ -892,7 +892,7 @@ module WillFilter
         end
 
         if custom_conditions?
-          recs = process_custom_conditions(recs.all)
+          recs = process_custom_conditions(recs.load)
           recs = Kaminari.paginate_array(recs)
         end  
 
