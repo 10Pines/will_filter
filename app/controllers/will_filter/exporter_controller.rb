@@ -1,5 +1,14 @@
 #--
-# Copyright (c) 2010-2013 Michael Berkovich
+# Copyright (c) 2017 Michael Berkovich, theiceberk@gmail.com
+#
+#  __    __  ____  _      _          _____  ____  _     ______    ___  ____
+# |  |__|  ||    || |    | |        |     ||    || |   |      |  /  _]|    \
+# |  |  |  | |  | | |    | |        |   __| |  | | |   |      | /  [_ |  D  )
+# |  |  |  | |  | | |___ | |___     |  |_   |  | | |___|_|  |_||    _]|    /
+# |  `  '  | |  | |     ||     |    |   _]  |  | |     | |  |  |   [_ |    \
+#  \      /  |  | |     ||     |    |  |    |  | |     | |  |  |     ||  .  \
+#   \_/\_/  |____||_____||_____|    |__|   |____||_____| |__|  |_____||__|\_|
+#
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -27,7 +36,7 @@ module WillFilter
   class ExporterController < ApplicationController
     
     def index
-      @wf_filter = WillFilter::Filter.deserialize_from_params(params)
+      @wf_filter = WillFilter::Filter.deserialize_from_params(params.permit!)
       render :layout => false
     end
   
@@ -35,7 +44,7 @@ module WillFilter
       params[:page] = 1
       params[:wf_per_page] = 10000 # max export limit
   
-      @wf_filter = WillFilter::Filter.deserialize_from_params(params)
+      @wf_filter = WillFilter::Filter.deserialize_from_params(params.permit!)
       
       if @wf_filter.custom_format?
         send_data(@wf_filter.process_custom_format, :type => 'text', :charset => 'utf-8')

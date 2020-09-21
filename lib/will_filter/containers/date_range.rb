@@ -1,5 +1,14 @@
 #--
-# Copyright (c) 2010-2013 Michael Berkovich
+# Copyright (c) 2017 Michael Berkovich, theiceberk@gmail.com
+#
+#  __    __  ____  _      _          _____  ____  _     ______    ___  ____
+# |  |__|  ||    || |    | |        |     ||    || |   |      |  /  _]|    \
+# |  |  |  | |  | | |    | |        |   __| |  | | |   |      | /  [_ |  D  )
+# |  |  |  | |  | | |___ | |___     |  |_   |  | | |___|_|  |_||    _]|    /
+# |  `  '  | |  | |     ||     |    |   _]  |  | |     | |  |  |   [_ |    \
+#  \      /  |  | |     ||     |    |  |    |  | |     | |  |  |     ||  .  \
+#   \_/\_/  |____||_____||_____|    |__|   |____||_____| |__|  |_____||__|\_|
+#
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -27,24 +36,24 @@ module WillFilter
       def self.operators
         [:is_in_the_range]
       end
-    
+
       def initialize(filter, criteria_key, operator, values)
         super(filter, criteria_key, operator, values)
         @start_date = values[0]
         @end_date = values[1] if values.size > 1
       end
-    
+
       def validate
         return "Start value must be provided" if @start_date.blank?
         return "Start value must be a valid date (2008-01-01)" if date(@start_date).nil?
         return "End value must be provided" if @end_date.blank?
         return "End value must be a valid date (2008-01-01)" if date(@end_date).nil?
       end
-    
+
       def sql_condition
         return [" (#{condition.full_key} >= ? and #{condition.full_key} <= ?) ", date(@start_date), date(@end_date)] if operator == :is_in_the_range
       end
-      
+
     end
   end
 end

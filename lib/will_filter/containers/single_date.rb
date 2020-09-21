@@ -1,5 +1,14 @@
 #--
-# Copyright (c) 2010-2013 Michael Berkovich
+# Copyright (c) 2017 Michael Berkovich, theiceberk@gmail.com
+#
+#  __    __  ____  _      _          _____  ____  _     ______    ___  ____
+# |  |__|  ||    || |    | |        |     ||    || |   |      |  /  _]|    \
+# |  |  |  | |  | | |    | |        |   __| |  | | |   |      | /  [_ |  D  )
+# |  |  |  | |  | | |___ | |___     |  |_   |  | | |___|_|  |_||    _]|    /
+# |  `  '  | |  | |     ||     |    |   _]  |  | |     | |  |  |   [_ |    \
+#  \      /  |  | |     ||     |    |  |    |  | |     | |  |  |     ||  .  \
+#   \_/\_/  |____||_____||_____|    |__|   |____||_____| |__|  |_____||__|\_|
+#
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -20,37 +29,38 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
+
 module WillFilter
   module Containers
     class SingleDate < WillFilter::FilterContainer
       def self.operators
         [:is_on, :is_not_on]
       end
-    
+
       def template_name
         'date'
       end
-    
+
       def validate
         return "Value must be provided" if value.blank?
         return "Value must be a valid date (2008-01-01)" if start_date_time == nil
       end
-    
+
       def start_date_time
         @start_date_time ||= Time.parse(value)
       rescue ArgumentError
         nil
       end
-    
+
       def end_date_time
         (start_date_time + 1.day)
       rescue ArgumentError
         nil
       end
-    
+
       def sql_condition
-        return [" #{condition.full_key} >= ? and #{condition.full_key} < ? ", time, time + 1.day]  if operator == :is_on
-        return [" #{condition.full_key} < ? and #{condition.full_key} >= ? ", time, time + 1.day]  if operator == :is_not_on
+        return [" #{condition.full_key} >= ? and #{condition.full_key} < ? ", time, time + 1.day] if operator == :is_on
+        return [" #{condition.full_key} < ? and #{condition.full_key} >= ? ", time, time + 1.day] if operator == :is_not_on
       end
     end
   end

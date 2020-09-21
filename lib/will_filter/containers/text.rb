@@ -1,5 +1,14 @@
 #--
-# Copyright (c) 2010-2013 Michael Berkovich
+# Copyright (c) 2017 Michael Berkovich, theiceberk@gmail.com
+#
+#  __    __  ____  _      _          _____  ____  _     ______    ___  ____
+# |  |__|  ||    || |    | |        |     ||    || |   |      |  /  _]|    \
+# |  |  |  | |  | | |    | |        |   __| |  | | |   |      | /  [_ |  D  )
+# |  |  |  | |  | | |___ | |___     |  |_   |  | | |___|_|  |_||    _]|    /
+# |  `  '  | |  | |     ||     |    |   _]  |  | |     | |  |  |   [_ |    \
+#  \      /  |  | |     ||     |    |  |    |  | |     | |  |  |     ||  .  \
+#   \_/\_/  |____||_____||_____|    |__|   |____||_____| |__|  |_____||__|\_|
+#
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -27,18 +36,19 @@ module WillFilter
       def self.operators
         [:is, :is_not, :contains, :does_not_contain, :starts_with, :ends_with]
       end
-    
+
       def validate
         # always valid, even when it is empty
       end
-    
+
       def sql_condition
-        return [" #{condition.full_key} = ? ", value]                 if operator == :is
-        return [" #{condition.full_key} <> ? ", value]                if operator == :is_not
-        return [" #{condition.full_key} like ? ", "%#{value}%"]       if operator == :contains
-        return [" #{condition.full_key} not like ? ", "%#{value}%"]   if operator == :does_not_contain
-        return [" #{condition.full_key} like ? ", "#{value}%"]        if operator == :starts_with
-        return [" #{condition.full_key} like ? ", "%#{value}"]        if operator == :ends_with
+        sanitized_value = value.to_s.downcase
+        return [" lower(#{condition.full_key}) = ? ", sanitized_value] if operator == :is
+        return [" lower(#{condition.full_key}) <> ? ", sanitized_value] if operator == :is_not
+        return [" lower(#{condition.full_key}) like ? ", "%#{sanitized_value}%"] if operator == :contains
+        return [" lower(#{condition.full_key}) not like ? ", "%#{sanitized_value}%"] if operator == :does_not_contain
+        return [" lower(#{condition.full_key}) like ? ", "#{sanitized_value}%"] if operator == :starts_with
+        return [" lower(#{condition.full_key}) like ? ", "%#{sanitized_value}"] if operator == :ends_with
       end
     end
   end

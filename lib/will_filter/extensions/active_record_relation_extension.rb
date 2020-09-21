@@ -30,34 +30,22 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-module WillFilter
-  class FilterCondition
-    attr_accessor :filter, :key, :operator, :container
-  
-    def initialize(filter, key, operator, container_class, values)
-      @filter     = filter
-      @key        = key
-      @operator   = operator
-      @container  = WillFilter::Config.containers[container_class].constantize.new(filter, self, operator, values)
+module ActiveRecord
+  class Relation
+
+    def wf_filter=(filter)
+      @wf_filter = filter
     end
-  
-    def validate
-      container.validate
+
+    def wf_filter
+      @wf_filter
     end
-  
-    def serialize_to_params(params, index)
-      params["wf_c#{index}".to_sym] = key
-      params["wf_o#{index}".to_sym] = operator
-      container.serialize_to_params(params, index)
-      params
+
+    def add_filter_condition(condition_key, operator_key, values = [])
+      sub_filter = wf_filter.dup
+      sub_filter.replace_condition(condition_key, operator_key, values)
+      sub_filter
     end
-    
-    def full_key
-      filter.sql_attribute_for_key(key)
-    end
-    
-    def to_s
-      key
-    end
+
   end
 end
