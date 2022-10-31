@@ -245,4 +245,63 @@ describe WillFilter::Filter do
 
   end
 
+  describe '#merge_params' do
+
+    context 'When a filter exists with some conditions' do
+      let!(:existent_filter) do
+        WillFilter::Filter.new(User).from_params({
+                                                   "wf_type"=>"WillFilter::Filter",
+                                                   "wf_match"=>:all,
+                                                   "wf_model"=>"User",
+                                                   "wf_order"=>"first_name",
+                                                   "wf_order_type"=>"asc",
+                                                   "wf_per_page"=>30,
+                                                   "wf_export_fields"=>"",
+                                                   "wf_export_format"=>:html,
+                                                   "wf_c0"=>:first_name,
+                                                   "wf_o0"=>:is,
+                                                   "wf_v0_0"=>"Alex",
+                                                   "wf_c1"=>:sex,
+                                                   "wf_o1"=>:is,
+                                                   "wf_v1_0"=>"male"
+                                                 })
+      end
+
+      context "and override some params" do
+        let(:new_params){ {"wf_order" => "last_name"} }
+
+        it "takes the new params over the existing ones" do
+          existent_filter.merge_params(new_params).order.should eq('last_name')
+        end
+
+        it "preserve unchanged params" do
+          existent_filter.order_type.should eq('asc')
+          existent_filter.conditions.size.should eq(2)
+          existent_filter.conditions.first.key.should eq(:first_name)
+          existent_filter.conditions.first.operator.should eq(:is)
+        end
+      end
+
+      context "and add some params" do
+        let(:new_params){ {"page" => 2, "wf_c2"=>:last_name, "wf_o2"=>:is, "wf_v2_0"=>"Foley",} }
+        let(:merged_filter){ existent_filter.merge_params(new_params) }
+
+        it "adds the new params" do
+          merged_filter.page.should eq(2)
+          merged_filter.conditions.size.should eq(3)
+          merged_filter.conditions.last.key.should eq(:last_name)
+          merged_filter.conditions.last.operator.should eq(:is)
+        end
+
+        it "preserve original params" do
+          merged_filter.order_type.should eq('asc')
+          merged_filter.order.should eq('first_name')
+          merged_filter.conditions.first.key.should eq(:first_name)
+          merged_filter.conditions.first.operator.should eq(:is)
+        end
+      end
+    end
+
+  end
+
 end

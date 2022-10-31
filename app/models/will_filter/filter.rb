@@ -522,6 +522,10 @@ module WillFilter
     end
     alias_method :to_params, :serialize_to_params
 
+    def merge_params(new_params)
+      from_params(to_params.merge(new_params))
+    end
+
     def to_url_params
       params = []
       serialize_to_params.each do |name, value|
