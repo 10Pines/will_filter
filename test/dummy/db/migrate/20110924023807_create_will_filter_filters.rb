@@ -1,4 +1,4 @@
-class CreateWillFilterFilters < ActiveRecord::Migration
+class CreateWillFilterFilters < ActiveRecord::Migration[4.2]
   def self.up
     create_table :will_filter_filters do |t|
       t.string      :type
