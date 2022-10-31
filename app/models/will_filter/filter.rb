@@ -438,10 +438,8 @@ module WillFilter
       values = values.collect{|v| v.to_s}
 
       condition_key = condition_key.to_sym if condition_key.is_a?(String)
-
-      unless valid_operator?(condition_key, operator_key)
-        return;
-      end
+      operator_key = operator_key.to_sym if operator_key.is_a?(String)
+      return unless valid_operator?(condition_key, operator_key)
 
       condition = WillFilter::FilterCondition.new(self, condition_key, operator_key, container_for(condition_key, operator_key), values)
       @conditions.insert(index, condition)

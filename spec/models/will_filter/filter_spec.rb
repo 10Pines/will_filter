@@ -201,7 +201,7 @@ describe WillFilter::Filter do
                                                            "wf_model" => "User",
                                                            "wf_order" => "id",
                                                            "wf_order_type" => "desc",
-                                                           "wf_per_page" => 100,
+                                                           "wf_per_page" => 30,
                                                            "wf_export_fields" => "",
                                                            "wf_export_format" => :html,
                                                            "extra" => "value"
@@ -209,6 +209,37 @@ describe WillFilter::Filter do
       end
     end
   end
+
+  describe '#add_condition' do
+    let(:filter){ WillFilter::Filter.new(User) }
+
+    context 'when adding a condition with a key that is a string' do
+      it 'adds the condition with the key as a symbol' do
+        filter.add_condition("sex", :is, "male")
+
+        filter.conditions.size.should eq(1)
+        filter.conditions.first.key.should eq(:sex)
+      end
+    end
+
+    context 'when adding a condition with an operator key that is a string' do
+      it 'adds the condition with the operator key as a symbol' do
+        filter.add_condition(:sex, "is", "male")
+
+        filter.conditions.size.should eq(1)
+        filter.conditions.first.operator.should eq(:is)
+      end
+    end
+
+    context 'when adding a condition over an inexistent attribute' do
+      it 'does not add the condition' do
+        filter.add_condition(:some_attribute, :is, "male")
+
+        filter.conditions.size.should eq(0)
+      end
+    end
+  end
+
 
   describe 'deserialization' do
 
