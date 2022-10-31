@@ -1,4 +1,4 @@
-class CreateEventUsers < ActiveRecord::Migration
+class CreateEventUsers < ActiveRecord::Migration[4.2]
   def self.up
     create_table :event_users do |t|
       t.integer :event_id
