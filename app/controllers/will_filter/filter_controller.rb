@@ -109,7 +109,7 @@ module WillFilter
     def delete_filter
       raise WillFilter::FilterException.new("Delete functions are disabled") unless  WillFilter::Config.saving_enabled?
 
-      wf_filter = WillFilter::Filter.find_by_id(params[:wf_id])
+      wf_filter = WillFilter::Filter.find_by_id(params[:wf_key])
       wf_filter.destroy if wf_filter
   
       wf_filter = WillFilter::Filter.deserialize_from_params(params.permit!)
