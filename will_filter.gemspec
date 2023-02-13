@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Michael Berkovich"]
   s.email       = ["theiceberk@gmail.com"]
   s.homepage    = "https://github.com/berk/will_filter"
-  s.summary     = "A filtering engine plugin for Rails 3.1"
+  s.summary     = "A filtering engine plugin for Rails"
   s.description = "will_filter is a powerful customizable framework for filtering active_record models."
 
   s.files         = `git ls-files`.split("\n")
