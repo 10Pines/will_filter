@@ -1,19 +1,19 @@
 source "http://rubygems.org"
 
+ruby '2.7.6'
+
 gem 'rails', '5.1.4'
 gem 'puma', '~> 3.7'
 
 # Declare your gem's dependencies in will_filter.gemspec.
 gemspec
 
-gem 'bundler', ['>= 1.0.0']
+gem 'bundler', ['>= 2.0.0']
 
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'bootstrap-sass'
 gem 'kaminari'
-
-gem 'bootstrap-sass'
 
 group :development do
   gem 'rspec'
@@ -30,4 +30,3 @@ group :assets do
   gem 'coffee-rails'
   gem 'uglifier'
 end
-

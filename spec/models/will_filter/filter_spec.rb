@@ -155,7 +155,7 @@ describe WillFilter::Filter do
                                      "wf_model" => "User",
                                      "wf_order" => "id",
                                      "wf_order_type" => "desc",
-                                     "wf_per_page" => 100,
+                                     "wf_per_page" => 30,
                                      "wf_export_fields" => "",
                                      "wf_export_format" => :html}
                                  )
@@ -176,7 +176,7 @@ describe WillFilter::Filter do
                                         "wf_model" => "User",
                                         "wf_order" => "id",
                                         "wf_order_type" => "desc",
-                                        "wf_per_page" => 100,
+                                        "wf_per_page" => 30,
                                         "wf_export_fields" => "",
                                         "wf_export_format" => :html,
                                         "wf_c0" => :first_name,
@@ -201,7 +201,7 @@ describe WillFilter::Filter do
                                                            "wf_model" => "User",
                                                            "wf_order" => "id",
                                                            "wf_order_type" => "desc",
-                                                           "wf_per_page" => 100,
+                                                           "wf_per_page" => 30,
                                                            "wf_export_fields" => "",
                                                            "wf_export_format" => :html,
                                                            "extra" => "value"
@@ -209,6 +209,37 @@ describe WillFilter::Filter do
       end
     end
   end
+
+  describe '#add_condition' do
+    let(:filter){ WillFilter::Filter.new(User) }
+
+    context 'when adding a condition with a key that is a string' do
+      it 'adds the condition with the key as a symbol' do
+        filter.add_condition("sex", :is, "male")
+
+        filter.conditions.size.should eq(1)
+        filter.conditions.first.key.should eq(:sex)
+      end
+    end
+
+    context 'when adding a condition with an operator key that is a string' do
+      it 'adds the condition with the operator key as a symbol' do
+        filter.add_condition(:sex, "is", "male")
+
+        filter.conditions.size.should eq(1)
+        filter.conditions.first.operator.should eq(:is)
+      end
+    end
+
+    context 'when adding a condition over an inexistent attribute' do
+      it 'does not add the condition' do
+        filter.add_condition(:some_attribute, :is, "male")
+
+        filter.conditions.size.should eq(0)
+      end
+    end
+  end
+
 
   describe 'deserialization' do
 
@@ -240,6 +271,96 @@ describe WillFilter::Filter do
         @filter.conditions.size.should eq(2)
         @filter.conditions.first.key.should eq(:first_name)
         @filter.conditions.first.operator.should eq(:is)
+      end
+    end
+
+    context 'When the serialized data has a condition over an inexistent attribute' do
+      before :all do
+        @filter = WillFilter::Filter.new(User)
+      end
+
+      it 'ignores the condition' do
+        @filter.from_params({
+                              "wf_type"=>"WillFilter::Filter",
+                              "wf_match"=>:all,
+                              "wf_model"=>"User",
+                              "wf_order"=>"first_name",
+                              "wf_order_type"=>"asc",
+                              "wf_per_page"=>30,
+                              "wf_export_fields"=>"",
+                              "wf_export_format"=>:html,
+                              "wf_c0"=>:inexistent_attribute,
+                              "wf_o0"=>:is,
+                              "wf_v0_0"=>"Alex",
+                              "wf_c1"=>:sex,
+                              "wf_o1"=>:is,
+                              "wf_v1_0"=>"male"
+                            })
+
+        @filter.order.should eq('first_name')
+        @filter.order_type.should eq('asc')
+        @filter.conditions.size.should eq(1)
+        @filter.conditions.first.key.should eq(:sex)
+        @filter.conditions.first.operator.should eq(:is)
+      end
+    end
+
+  end
+
+  describe '#merge_params' do
+
+    context 'When a filter exists with some conditions' do
+      let!(:existent_filter) do
+        WillFilter::Filter.new(User).from_params({
+                                                   "wf_type"=>"WillFilter::Filter",
+                                                   "wf_match"=>:all,
+                                                   "wf_model"=>"User",
+                                                   "wf_order"=>"first_name",
+                                                   "wf_order_type"=>"asc",
+                                                   "wf_per_page"=>30,
+                                                   "wf_export_fields"=>"",
+                                                   "wf_export_format"=>:html,
+                                                   "wf_c0"=>:first_name,
+                                                   "wf_o0"=>:is,
+                                                   "wf_v0_0"=>"Alex",
+                                                   "wf_c1"=>:sex,
+                                                   "wf_o1"=>:is,
+                                                   "wf_v1_0"=>"male"
+                                                 })
+      end
+
+      context "and override some params" do
+        let(:new_params){ {"wf_order" => "last_name"} }
+
+        it "takes the new params over the existing ones" do
+          existent_filter.merge_params(new_params).order.should eq('last_name')
+        end
+
+        it "preserve unchanged params" do
+          existent_filter.order_type.should eq('asc')
+          existent_filter.conditions.size.should eq(2)
+          existent_filter.conditions.first.key.should eq(:first_name)
+          existent_filter.conditions.first.operator.should eq(:is)
+        end
+      end
+
+      context "and add some params" do
+        let(:new_params){ {"page" => 2, "wf_c2"=>:last_name, "wf_o2"=>:is, "wf_v2_0"=>"Foley",} }
+        let(:merged_filter){ existent_filter.merge_params(new_params) }
+
+        it "adds the new params" do
+          merged_filter.page.should eq(2)
+          merged_filter.conditions.size.should eq(3)
+          merged_filter.conditions.last.key.should eq(:last_name)
+          merged_filter.conditions.last.operator.should eq(:is)
+        end
+
+        it "preserve original params" do
+          merged_filter.order_type.should eq('asc')
+          merged_filter.order.should eq('first_name')
+          merged_filter.conditions.first.key.should eq(:first_name)
+          merged_filter.conditions.first.operator.should eq(:is)
+        end
       end
     end
 

@@ -30,7 +30,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class CreateWillFilterFilters < ActiveRecord::Migration
+class CreateWillFilterFilters < ActiveRecord::Migration[4.2]
   def change
     create_table :will_filter_filters do |t|
       t.string      :type

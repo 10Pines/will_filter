@@ -24,9 +24,9 @@ ActiveRecord::Schema.define(version: 20120223232000) do
 
   create_table "events", force: :cascade do |t|
     t.integer "creator_id"
-    t.string "type", limit: 255
-    t.string "name", limit: 255
-    t.string "headline", limit: 255
+    t.string "type"
+    t.string "name"
+    t.string "headline"
     t.datetime "start_time"
     t.datetime "end_time"
     t.datetime "created_at"
@@ -37,7 +37,7 @@ ActiveRecord::Schema.define(version: 20120223232000) do
 
   create_table "merchant_order_items", force: :cascade do |t|
     t.integer "order_id"
-    t.string "name", limit: 255
+    t.string "name"
     t.integer "price"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -51,20 +51,20 @@ ActiveRecord::Schema.define(version: 20120223232000) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "first_name", limit: 255
-    t.string "last_name", limit: 255
+    t.string "first_name"
+    t.string "last_name"
     t.date "birthday"
-    t.string "sex", limit: 255
+    t.string "sex"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "will_filter_filters", force: :cascade do |t|
-    t.string "type", limit: 255
-    t.string "name", limit: 255
+    t.string "type"
+    t.string "name"
     t.text "data"
     t.integer "user_id"
-    t.string "model_class_name", limit: 255
+    t.string "model_class_name"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.index ["user_id"], name: "index_will_filter_filters_on_user_id"

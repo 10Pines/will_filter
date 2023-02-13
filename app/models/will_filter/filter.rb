@@ -297,11 +297,15 @@ module WillFilter
     end
 
     def default_per_page
-      100
+      30
     end
 
     def per_page
       @per_page ||= default_per_page
+    end
+
+    def show_all?
+      per_page == 'all'
     end
 
     def page
@@ -434,11 +438,8 @@ module WillFilter
       values = values.collect{|v| v.to_s}
 
       condition_key = condition_key.to_sym if condition_key.is_a?(String)
-
-      unless valid_operator?(condition_key, operator_key)
-        opers = definition[condition_key]
-        operator_key = first_sorted_operator(opers)
-      end
+      operator_key = operator_key.to_sym if operator_key.is_a?(String)
+      return unless valid_operator?(condition_key, operator_key)
 
       condition = WillFilter::FilterCondition.new(self, condition_key, operator_key, container_for(condition_key, operator_key), values)
       @conditions.insert(index, condition)
@@ -517,6 +518,10 @@ module WillFilter
       HashWithIndifferentAccess.new(params)
     end
     alias_method :to_params, :serialize_to_params
+
+    def merge_params(new_params)
+      from_params(to_params.merge(new_params))
+    end
 
     def to_url_params
       params = []
@@ -930,7 +935,7 @@ module WillFilter
         end
 
         inner_joins.each do |inner_join|
-          recs = recs.joins(association_name(inner_join))
+          recs = recs.joins(association_name(inner_join)).distinct
         end
 
         if custom_conditions?
@@ -939,14 +944,15 @@ module WillFilter
         end
 
 
-        recs = recs.page(page).per(per_page)
+        count = show_all? ? recs.count : per_page
+        recs = recs.page(page).per(count)
 
         recs.wf_filter = self
 
         recs
       end
     end
-    
+
 
     # sums up the column for the given conditions
     def sum(column_name)
