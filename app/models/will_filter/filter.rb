@@ -297,7 +297,7 @@ module WillFilter
     end
 
     def default_per_page
-      100
+      30
     end
 
     def per_page
@@ -952,7 +952,7 @@ module WillFilter
         recs
       end
     end
-    
+
 
     # sums up the column for the given conditions
     def sum(column_name)

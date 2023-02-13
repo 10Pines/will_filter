@@ -155,7 +155,7 @@ describe WillFilter::Filter do
                                      "wf_model" => "User",
                                      "wf_order" => "id",
                                      "wf_order_type" => "desc",
-                                     "wf_per_page" => 100,
+                                     "wf_per_page" => 30,
                                      "wf_export_fields" => "",
                                      "wf_export_format" => :html}
                                  )
@@ -176,7 +176,7 @@ describe WillFilter::Filter do
                                         "wf_model" => "User",
                                         "wf_order" => "id",
                                         "wf_order_type" => "desc",
-                                        "wf_per_page" => 100,
+                                        "wf_per_page" => 30,
                                         "wf_export_fields" => "",
                                         "wf_export_format" => :html,
                                         "wf_c0" => :first_name,
