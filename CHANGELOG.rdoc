@@ -1,3 +1,15 @@
+== 5.2.0
+
+Remove select2 dependency, as 10Pines will style the components with the `chosen` library.
+
+== 5.1.5
+
+First version by 10Pines.
+
+== 5.1.4
+
+Version prior to 10Pines fork. Working with Rails 5.x.
+
 == 3.1.2, released 2011-10-01
 * fixed associations
 * fixed debugging info
