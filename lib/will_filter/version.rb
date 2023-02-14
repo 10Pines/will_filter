@@ -31,5 +31,5 @@
 #++
 
 module WillFilter
-  VERSION = '5.1.5'
+  VERSION = '5.2.0'
 end
