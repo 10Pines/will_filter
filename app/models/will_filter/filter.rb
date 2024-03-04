@@ -433,12 +433,18 @@ module WillFilter
       opers[operator_key]!=nil
     end
 
+    def valid_condition?(condition_key)
+      !definition[condition_key].nil?
+    end
+
     def add_condition_at(index, condition_key, operator_key, values = [])
       values = [values] unless values.instance_of?(Array)
       values = values.collect{|v| v.to_s}
 
       condition_key = condition_key.to_sym if condition_key.is_a?(String)
       operator_key = operator_key.to_sym if operator_key.is_a?(String)
+
+      return unless valid_condition?(condition_key)
 
       unless valid_operator?(condition_key, operator_key)
         # When the condition key changes, the selected operator key might not be valid.

@@ -303,6 +303,41 @@ describe WillFilter::Filter do
         @filter.conditions.first.key.should eq(:sex)
         @filter.conditions.first.operator.should eq(:is)
       end
+      end
+
+    context 'When the serialized data has a condition with an invalid operator' do
+      before :all do
+        @filter = WillFilter::Filter.new(User)
+      end
+
+      it 'resets the condition operator and values to the default values' do
+        @filter.from_params({
+                              "wf_type" => "WillFilter::Filter",
+                              "wf_match" => :all,
+                              "wf_model" => "User",
+                              "wf_order" => "first_name",
+                              "wf_order_type" => "asc",
+                              "wf_per_page" => 30,
+                              "wf_export_fields" => "",
+                              "wf_export_format" => :html,
+                              "wf_c0" => :first_name,
+                              "wf_o0" => :is,
+                              "wf_v0_0" => "Alex",
+                              "wf_c1" => :sex,
+                              "wf_o1" => :INVALID_OPERATOR,
+                              "wf_v1_0" => "male"
+                            })
+
+        @filter.order.should eq('first_name')
+        @filter.order_type.should eq('asc')
+        @filter.conditions.size.should eq(2)
+        @filter.conditions.first.key.should eq(:first_name)
+        @filter.conditions.first.operator.should eq(:is)
+        @filter.conditions.first.container.values.should eq(["Alex"])
+        @filter.conditions.second.key.should eq(:sex)
+        @filter.conditions.second.operator.should eq(:is)
+        @filter.conditions.second.container.values.should be_empty
+      end
     end
 
   end
