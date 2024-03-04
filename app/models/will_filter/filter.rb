@@ -433,13 +433,32 @@ module WillFilter
       opers[operator_key]!=nil
     end
 
+    def valid_condition?(condition_key)
+      !definition[condition_key].nil?
+    end
+
     def add_condition_at(index, condition_key, operator_key, values = [])
       values = [values] unless values.instance_of?(Array)
       values = values.collect{|v| v.to_s}
 
       condition_key = condition_key.to_sym if condition_key.is_a?(String)
       operator_key = operator_key.to_sym if operator_key.is_a?(String)
-      return unless valid_operator?(condition_key, operator_key)
+
+      return unless valid_condition?(condition_key)
+
+      unless valid_operator?(condition_key, operator_key)
+        # When the condition key changes, the selected operator key might not be valid.
+        # e.g.
+        #       previous condition key  = a text attribute
+        #       previous operator key   = starts with
+        #
+        #       the user changes the selected attribute to a numeric one
+        #       in this context, the "starts with" operator and its value are not valid anymore for the numeric filter
+        #
+        # wWhen this happens, we reset the filter to the new attribute's default operator and empty values.
+        operator_key = default_operator_key(condition_key).to_sym
+        values = []
+      end
 
       condition = WillFilter::FilterCondition.new(self, condition_key, operator_key, container_for(condition_key, operator_key), values)
       @conditions.insert(index, condition)
