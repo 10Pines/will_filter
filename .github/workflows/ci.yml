@@ -1,0 +1,20 @@
+name: CI
+
+on: push
+
+jobs:
+  build-and-tests:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    permissions: read-all
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Run Tests
+        run: bundle exec rspec
